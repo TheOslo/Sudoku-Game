@@ -54,17 +54,7 @@ The backend also uses Express and CORS. If they are not already installed:
 npm install express cors
 ```
 
-### 2. Environment variables
-
-Create a `.env` file in the project root:
-
-```env
-MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>.mongodb.net/<dbname>?retryWrites=true&w=majority
-```
-
-Replace the placeholder with your MongoDB Atlas connection string.
-
-### 3. Run the frontend
+### 2. Run the frontend
 
 Open `index.html` in your browser, or serve the folder with a static server:
 
