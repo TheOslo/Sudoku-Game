@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <meta charset="utf-8">
+            <meta content="width=device-width, initial-scale=1.0" name="viewport">
+            <title>ZenSudoku - Premium Logic Experience</title>
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+            <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+            <link href="style.css" rel="stylesheet">
+            <script src="logic.js"></script>
+        </head>
+        <body>
+            <header class="app-header">
+                <div class="header-content">
+                    <h1 class="header-title">ZenSudoku</h1>
+                    <div class="header-actions">
+                        <button class="icon-btn" id="themeToggle" title="Toggle Theme">
+                            <span class="material-symbols-outlined">dark_mode</span>
+                        </button>
+                        <button class="icon-btn">
+                            <span class="material-symbols-outlined">settings</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            <main class="main-content">
+            <!-- Desktop Controls -->
+            <aside class="sidebar-left">
+            <div class="card">
+            <div style="margin-bottom: 24px;">
+            <h2 style="font-size: 24px; font-weight: 700;" class="">Game Controls</h2>
+            <p style="font-size: 14px; color: var(--on-surface-variant);" class="">Sudoku Master</p>
+            </div>
+            <nav class="sidebar-nav">
+            <button class="nav-item" onclick="newGame()" style="font-family: &quot;Montserrat&quot;, &quot;Inter&quot;, system-ui, sans-serif; font-weight: 700; letter-spacing: 0.02em;">
+            <span class="material-symbols-outlined">add_box</span>
+                                    New Game
+                                </button>
+            <button class="nav-item" onclick="solveSudoku()" style="font-family: &quot;Montserrat&quot;, &quot;Inter&quot;, system-ui, sans-serif; font-weight: 700; letter-spacing: 0.02em;">
+            <span class="material-symbols-outlined">auto_fix_high</span>
+                                    Solve
+                                </button>
+            <button class="nav-item" onclick="clearBoard()" style="font-family: &quot;Montserrat&quot;, &quot;Inter&quot;, system-ui, sans-serif; font-weight: 700; letter-spacing: 0.02em;">
+            <span class="material-symbols-outlined">backspace</span>
+                                    Clear
+                                </button>
+            <button class="nav-item" style="font-family: &quot;Montserrat&quot;, &quot;Inter&quot;, system-ui, sans-serif; font-weight: 700; letter-spacing: 0.02em;">
+            <span class="material-symbols-outlined">equalizer</span>
+                                    Statistics
+                                </button>
+            </nav>
+            </div>
+            
+            </aside>
+            <!-- Main Game Area -->
+            <section class="game-section">
+            <div class="game-header">
+            <div>
+            
+            <h2 class="">Solving Puzzle</h2>
+            </div>
+            <div class="timer-box">
+            <span class="material-symbols-outlined">schedule</span>
+            <span id="timer" class="">02:29</span>
+            </div>
+            </div>
+            <div class="grid-container">
+            <div class="sudoku-grid" id="sudokuGrid"><div class="sudoku-cell preset" data-index="0">5</div><div class="sudoku-cell preset" data-index="1">3</div><div class="sudoku-cell" data-index="2"></div><div class="sudoku-cell" data-index="3"></div><div class="sudoku-cell preset" data-index="4">7</div><div class="sudoku-cell" data-index="5"></div><div class="sudoku-cell" data-index="6"></div><div class="sudoku-cell" data-index="7"></div><div class="sudoku-cell" data-index="8"></div><div class="sudoku-cell preset" data-index="9">6</div><div class="sudoku-cell" data-index="10"></div><div class="sudoku-cell" data-index="11"></div><div class="sudoku-cell preset" data-index="12">1</div><div class="sudoku-cell preset" data-index="13">9</div><div class="sudoku-cell preset" data-index="14">5</div><div class="sudoku-cell" data-index="15"></div><div class="sudoku-cell" data-index="16"></div><div class="sudoku-cell" data-index="17"></div><div class="sudoku-cell" data-index="18"></div><div class="sudoku-cell preset" data-index="19">9</div><div class="sudoku-cell preset" data-index="20">8</div><div class="sudoku-cell" data-index="21"></div><div class="sudoku-cell" data-index="22"></div><div class="sudoku-cell" data-index="23"></div><div class="sudoku-cell" data-index="24"></div><div class="sudoku-cell preset" data-index="25">6</div><div class="sudoku-cell" data-index="26"></div><div class="sudoku-cell preset" data-index="27">8</div><div class="sudoku-cell" data-index="28"></div><div class="sudoku-cell" data-index="29"></div><div class="sudoku-cell" data-index="30"></div><div class="sudoku-cell preset" data-index="31">6</div><div class="sudoku-cell" data-index="32"></div><div class="sudoku-cell" data-index="33"></div><div class="sudoku-cell" data-index="34"></div><div class="sudoku-cell preset" data-index="35">3</div><div class="sudoku-cell preset" data-index="36">4</div><div class="sudoku-cell" data-index="37"></div><div class="sudoku-cell" data-index="38"></div><div class="sudoku-cell preset" data-index="39">8</div><div class="sudoku-cell" data-index="40"></div><div class="sudoku-cell preset" data-index="41">3</div><div class="sudoku-cell" data-index="42"></div><div class="sudoku-cell" data-index="43"></div><div class="sudoku-cell preset" data-index="44">1</div><div class="sudoku-cell preset" data-index="45">7</div><div class="sudoku-cell" data-index="46"></div><div class="sudoku-cell" data-index="47"></div><div class="sudoku-cell" data-index="48"></div><div class="sudoku-cell preset" data-index="49">2</div><div class="sudoku-cell" data-index="50"></div><div class="sudoku-cell" data-index="51"></div><div class="sudoku-cell" data-index="52"></div><div class="sudoku-cell preset" data-index="53">6</div><div class="sudoku-cell" data-index="54"></div><div class="sudoku-cell preset" data-index="55">6</div><div class="sudoku-cell" data-index="56"></div><div class="sudoku-cell" data-index="57"></div><div class="sudoku-cell" data-index="58"></div><div class="sudoku-cell" data-index="59"></div><div class="sudoku-cell preset" data-index="60">2</div><div class="sudoku-cell preset" data-index="61">8</div><div class="sudoku-cell" data-index="62"></div><div class="sudoku-cell" data-index="63"></div><div class="sudoku-cell" data-index="64"></div><div class="sudoku-cell" data-index="65"></div><div class="sudoku-cell preset" data-index="66">4</div><div class="sudoku-cell preset" data-index="67">1</div><div class="sudoku-cell preset" data-index="68">9</div><div class="sudoku-cell" data-index="69"></div><div class="sudoku-cell" data-index="70"></div><div class="sudoku-cell preset" data-index="71">5</div><div class="sudoku-cell" data-index="72"></div><div class="sudoku-cell" data-index="73"></div><div class="sudoku-cell" data-index="74"></div><div class="sudoku-cell" data-index="75"></div><div class="sudoku-cell preset" data-index="76">8</div><div class="sudoku-cell" data-index="77"></div><div class="sudoku-cell" data-index="78"></div><div class="sudoku-cell preset" data-index="79">7</div><div class="sudoku-cell preset" data-index="80">9</div></div>
+            </div>
+            <div class="number-pad">
+            <button class="num-btn" onclick="handleInput(1)">1</button>
+            <button class="num-btn" onclick="handleInput(2)">2</button>
+            <button class="num-btn" onclick="handleInput(3)">3</button>
+            <button class="num-btn" onclick="handleInput(4)">4</button>
+            <button class="num-btn" onclick="handleInput(5)">5</button>
+            <button class="num-btn" onclick="handleInput(6)">6</button>
+            <button class="num-btn" onclick="handleInput(7)">7</button>
+            <button class="num-btn" onclick="handleInput(8)">8</button>
+            <button class="num-btn" onclick="handleInput(9)">9</button>
+            <button class="num-btn action" onclick="handleInput(0)">
+            <span class="material-symbols-outlined">backspace</span>
+            </button>
+            </div>
+            </section>
+            <!-- Stats sidebar -->
+            <aside class="sidebar-right">
+            <div class="card instructions">
+            <h3 style="color: var(--on-surface);" class="">HOW TO PLAY</h3>
+            <p class="">
+                Fill the 9x9 grid so that each row, column, and 3x3 box contains all numbers from 1 to 9. Click a cell to select it and then use the number pad or your keyboard.
+            </p>
+            </div>
+            </aside>
+            </main>
+        </body>
+</html>

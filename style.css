@@ -1,0 +1,381 @@
+:root {
+    --surface-bright: #f8f9ff;
+    --on-tertiary-fixed: #351000;
+    --surface: #f8f9ff;
+    --on-primary-container: #dad7ff;
+    --error: #ba1a1a;
+    --primary: #3525cd;
+    --on-tertiary-fixed-variant: #7b2f00;
+    --surface-dim: #d0dbed;
+    --secondary-container: #40c2fd;
+    --secondary-fixed: #c4e7ff;
+    --primary-fixed: #e2dfff;
+    --surface-container-highest: #d9e3f6;
+    --primary-fixed-dim: #c3c0ff;
+    --on-primary-fixed-variant: #3323cc;
+    --on-background: #121c2a;
+    --on-tertiary-container: #ffd2be;
+    --surface-container-high: #dee9fc;
+    --surface-container: #e6eeff;
+    --on-secondary-fixed-variant: #004c69;
+    --on-surface: #121c2a;
+    --on-primary: #ffffff;
+    --surface-container-low: #eff4ff;
+    --surface-container-lowest: #ffffff;
+    --tertiary-fixed-dim: #ffb695;
+    --inverse-on-surface: #eaf1ff;
+    --surface-variant: #d9e3f6;
+    --surface-tint: #4d44e3;
+    --primary-container: #4f46e5;
+    --on-error: #ffffff;
+    --error-container: #ffdad6;
+    --on-tertiary: #ffffff;
+    --tertiary-fixed: #ffdbcc;
+    --tertiary-container: #a44100;
+    --outline-variant: #c7c4d8;
+    --on-error-container: #93000a;
+    --on-secondary-fixed: #001e2c;
+    --secondary: #00668a;
+    --on-surface-variant: #464555;
+    --secondary-fixed-dim: #7bd0ff;
+    --outline: #777587;
+    --on-secondary: #ffffff;
+    --on-primary-fixed: #0f0069;
+    --background: #f8f9ff;
+    --tertiary: #7e3000;
+    --on-secondary-container: #004d6a;
+    --inverse-primary: #c3c0ff;
+    --inverse-surface: #27313f;
+
+    --border-radius-default: 0.25rem;
+    --border-radius-lg: 0.5rem;
+    --border-radius-xl: 0.75rem;
+    --border-radius-full: 9999px;
+    
+    --container-padding: 24px;
+    --element-spacing: 16px;
+}
+
+.dark {
+    --background: var(--on-background);
+    --surface: var(--on-background);
+    --on-surface: var(--surface-bright);
+    --on-surface-variant: var(--outline-variant);
+    --surface-container-low: rgba(255, 255, 255, 0.05);
+    --surface-container-high: rgba(255, 255, 255, 0.1);
+    --surface-container-lowest: rgba(255, 255, 255, 0.05);
+    --outline-variant: rgba(255, 255, 255, 0.1);
+    --primary: var(--primary-fixed-dim);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background);
+    color: var(--on-surface);
+    transition: background-color 0.3s, color 0.3s;
+    min-height: 100vh;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Layout */
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 64px;
+    background-color: var(--surface);
+    border-bottom: 1px solid var(--outline-variant);
+    z-index: 40;
+    display: flex;
+    align-items: center;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 var(--container-padding);
+}
+
+.header-title {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.header-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: var(--border-radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    transition: background-color 0.2s;
+}
+
+.icon-btn:hover {
+    background-color: var(--surface-container);
+}
+
+.main-content {
+    padding-top: 88px;
+    padding-bottom: 32px;
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    gap: 32px;
+    padding-left: var(--container-padding);
+    padding-right: var(--container-padding);
+    justify-content: center;
+}
+
+/* Sidebars */
+.sidebar-left, .sidebar-right {
+    width: 280px;
+    flex-shrink: 0;
+    display: none;
+    flex-direction: column;
+    gap: 24px;
+}
+
+@media (min-width: 768px) {
+    .sidebar-left { display: flex; }
+}
+
+@media (min-width: 1024px) {
+    .sidebar-right { display: flex; }
+}
+
+.card {
+    background-color: var(--surface-container-low);
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--border-radius-xl);
+    padding: 24px;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    border-radius: var(--border-radius-xl);
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border: none;
+    background: none;
+    color: var(--on-surface);
+    font-weight: 600;
+    font-size: 14px;
+    text-align: left;
+    width: 100%;
+}
+
+.nav-item:hover {
+    background-color: var(--surface-container-high);
+}
+
+.nav-item span.material-symbols-outlined {
+    color: var(--primary);
+}
+
+.difficulty-card {
+    margin-top: auto;
+    background-color: var(--primary-container);
+    color: var(--on-primary-container);
+    padding: 16px;
+    border-radius: var(--border-radius-xl);
+}
+
+.dark .difficulty-card {
+    background-color: var(--primary);
+    color: var(--on-primary);
+}
+
+.difficulty-label {
+    font-size: 12px;
+    opacity: 0.8;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.difficulty-value {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+/* Sudoku Section */
+.game-section {
+    flex: 1;
+    max-width: 500px;
+    width: 100%;
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 24px;
+}
+
+.game-header .mode {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--on-surface-variant);
+}
+
+.game-header h2 {
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.timer-box {
+    text-align: right;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 24px;
+    font-weight: 600;
+    font-family: monospace;
+}
+
+.timer-box .material-symbols-outlined {
+    color: var(--primary);
+}
+
+/* The Grid */
+.grid-container {
+    background-color: var(--surface-container-lowest);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius-xl);
+    padding: 8px;
+    border: 1px solid var(--outline-variant);
+    width: 100%;
+}
+
+.sudoku-grid {
+    aspect-ratio: 1 / 1;
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    border: 3px solid var(--on-surface);
+}
+
+.sudoku-cell {
+    border: 0.5px solid var(--outline-variant);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 22px;
+    font-weight: 500;
+    position: relative;
+    transition: background-color 0.2s, outline 0.1s;
+}
+
+@media (min-width: 768px) {
+    .sudoku-cell { font-size: 28px; }
+}
+
+.sudoku-cell:nth-child(3n) { border-right-width: 3px; }
+.sudoku-cell:nth-child(9n) { border-right-width: 0.5px; }
+.sudoku-cell:nth-child(n+19):nth-child(-n+27),
+.sudoku-cell:nth-child(n+46):nth-child(-n+54) { border-bottom-width: 3px; }
+
+.sudoku-cell.active {
+    background-color: rgba(53, 37, 205, 0.1);
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
+    z-index: 5;
+}
+
+.sudoku-cell.highlight-related {
+    background-color: rgba(53, 37, 205, 0.04);
+}
+
+.sudoku-cell.preset {
+    font-weight: 800;
+    color: var(--on-surface);
+}
+
+.sudoku-cell.user-filled {
+    color: var(--primary);
+}
+
+/* Number Pad */
+.number-pad {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 32px;
+}
+
+@media (min-width: 768px) {
+    .number-pad { grid-template-columns: repeat(9, 1fr); }
+}
+
+.num-btn {
+    height: 56px;
+    background-color: var(--surface-container);
+    border: none;
+    border-radius: var(--border-radius-xl);
+    font-size: 24px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--on-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.num-btn:hover {
+    background-color: var(--primary);
+    color: white;
+}
+
+.num-btn.action {
+    background-color: var(--surface-container-highest);
+}
+
+.num-btn.action:hover {
+    background-color: var(--error);
+}
+
+/* Stats & Meta */
+.stat-card h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 16px;
+    letter-spacing: 0.05em;
+}
+
+.instructions p {
+    color: var(--on-surface-variant);
+    font-size: 14px;
+    line-height: 1.6;
+}
