@@ -6,6 +6,8 @@ let selectedCell = null;
 let timerInterval = null;
 let totalSeconds = 0;
 
+const API_BASE_URL = window.location.protocol === 'file:' ? 'http://localhost:5000' : '';
+
 function initGame() {
     const cells = document.querySelectorAll('.sudoku-cell');
 
@@ -21,6 +23,63 @@ function initGame() {
             highlightGridIntersections(cell);
         });
     });
+}
+
+function readBoardFromDOM() {
+    const cells = document.querySelectorAll('.sudoku-cell');
+
+    initialBoard = Array.from({ length: 9 }, () => Array(9).fill(0));
+
+    cells.forEach(cell => {
+        const index = parseInt(cell.getAttribute('data-index'));
+        const row = Math.floor(index / 9);
+        const col = index % 9;
+        const value = parseInt(cell.textContent);
+
+        initialBoard[row][col] = Number.isInteger(value) ? value : 0;
+    });
+
+    currentBoard = JSON.parse(JSON.stringify(initialBoard));
+}
+
+function renderBoard(board) {
+    const cells = document.querySelectorAll('.sudoku-cell');
+
+    cells.forEach(cell => {
+        const index = parseInt(cell.getAttribute('data-index'));
+        const row = Math.floor(index / 9);
+        const col = index % 9;
+        const value = board[row][col];
+
+        cell.textContent = value || '';
+        cell.style.color = '';
+        cell.classList.remove('active', 'highlight-related', 'preset');
+
+        if (value) {
+            cell.classList.add('preset');
+        }
+    });
+
+    selectedCell = null;
+}
+
+async function loadRandomPuzzle() {
+    const response = await fetch(`${API_BASE_URL}/api/puzzles/random`);
+
+    if (!response.ok) {
+        throw new Error(`Puzzle request failed with status ${response.status}`);
+    }
+
+    const puzzle = await response.json();
+
+    if (!Array.isArray(puzzle.board) || puzzle.board.length !== 9) {
+        throw new Error('Puzzle response did not contain a valid board.');
+    }
+
+    initialBoard = puzzle.board;
+    currentBoard = JSON.parse(JSON.stringify(initialBoard));
+    renderBoard(initialBoard);
+    startTimer();
 }
 
 function startTimer() {
@@ -180,8 +239,13 @@ function clearBoard() {
     startTimer();
 }
 
-function newGame() {
-    clearBoard();
+async function newGame() {
+    try {
+        await loadRandomPuzzle();
+    } catch (error) {
+        console.error('Failed to load puzzle from backend:', error);
+        clearBoard();
+    }
 }
 
 function setupThemeToggle() {
@@ -212,7 +276,11 @@ document.addEventListener('keydown', (event) => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    readBoardFromDOM();
     initGame();
     setupThemeToggle();
-    startTimer();
+    loadRandomPuzzle().catch(error => {
+        console.error('Failed to load puzzle from backend:', error);
+        startTimer();
+    });
 });
