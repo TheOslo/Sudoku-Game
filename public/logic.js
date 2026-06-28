@@ -1,12 +1,34 @@
-let initialBoard = Array.from({ length: 9 }, () => Array(9).fill(0));
-let currentBoard = Array.from({ length: 9 }, () => Array(9).fill(0));
+const BOARD_SIZE = 9;
+const BOX_SIZE = 3;
+const EMPTY_CELL = 0;
 
-currentBoard = JSON.parse(JSON.stringify(initialBoard));
+let initialBoard = createEmptyBoard();
+let currentBoard = createEmptyBoard();
+
+currentBoard = cloneBoard(initialBoard);
 let selectedCell = null;
 let timerInterval = null;
 let totalSeconds = 0;
 
 const API_BASE_URL = window.location.protocol === 'file:' ? 'http://localhost:5000' : '';
+
+function createEmptyBoard() {
+    return Array.from({ length: BOARD_SIZE }, () => Array(BOARD_SIZE).fill(EMPTY_CELL));
+}
+
+function cloneBoard(board) {
+    return board.map(row => [...row]);
+}
+
+function isValidBoard(board) {
+    return Array.isArray(board)
+        && board.length === BOARD_SIZE
+        && board.every(row =>
+            Array.isArray(row)
+            && row.length === BOARD_SIZE
+            && row.every(value => Number.isInteger(value) && value >= 0 && value <= 9)
+        );
+}
 
 function initGame() {
     const cells = document.querySelectorAll('.sudoku-cell');
@@ -28,27 +50,31 @@ function initGame() {
 function readBoardFromDOM() {
     const cells = document.querySelectorAll('.sudoku-cell');
 
-    initialBoard = Array.from({ length: 9 }, () => Array(9).fill(0));
+    initialBoard = createEmptyBoard();
 
     cells.forEach(cell => {
         const index = parseInt(cell.getAttribute('data-index'));
-        const row = Math.floor(index / 9);
-        const col = index % 9;
-        const value = parseInt(cell.textContent);
+        const row = Math.floor(index / BOARD_SIZE);
+        const col = index % BOARD_SIZE;
+        const value = parseInt(cell.textContent, 10);
 
-        initialBoard[row][col] = Number.isInteger(value) ? value : 0;
+        initialBoard[row][col] = Number.isInteger(value) && value >= 1 && value <= 9 ? value : EMPTY_CELL;
     });
 
-    currentBoard = JSON.parse(JSON.stringify(initialBoard));
+    currentBoard = cloneBoard(initialBoard);
 }
 
 function renderBoard(board) {
+    if (!isValidBoard(board)) {
+        throw new Error('Cannot render an invalid Sudoku board.');
+    }
+
     const cells = document.querySelectorAll('.sudoku-cell');
 
     cells.forEach(cell => {
         const index = parseInt(cell.getAttribute('data-index'));
-        const row = Math.floor(index / 9);
-        const col = index % 9;
+        const row = Math.floor(index / BOARD_SIZE);
+        const col = index % BOARD_SIZE;
         const value = board[row][col];
 
         cell.textContent = value || '';
@@ -72,12 +98,12 @@ async function loadRandomPuzzle() {
 
     const puzzle = await response.json();
 
-    if (!Array.isArray(puzzle.board) || puzzle.board.length !== 9) {
+    if (!isValidBoard(puzzle.board)) {
         throw new Error('Puzzle response did not contain a valid board.');
     }
 
     initialBoard = puzzle.board;
-    currentBoard = JSON.parse(JSON.stringify(initialBoard));
+    currentBoard = cloneBoard(initialBoard);
     renderBoard(initialBoard);
     startTimer();
 }
@@ -108,18 +134,18 @@ function updateTimerUI() {
 
 function highlightGridIntersections(targetCell) {
     const index = parseInt(targetCell.getAttribute('data-index'));
-    const targetRow = Math.floor(index / 9);
-    const targetCol = index % 9;
-    const targetBoxRow = targetRow - (targetRow % 3);
-    const targetBoxCol = targetCol - (targetCol % 3);
+    const targetRow = Math.floor(index / BOARD_SIZE);
+    const targetCol = index % BOARD_SIZE;
+    const targetBoxRow = targetRow - (targetRow % BOX_SIZE);
+    const targetBoxCol = targetCol - (targetCol % BOX_SIZE);
 
     const cells = document.querySelectorAll('.sudoku-cell');
     cells.forEach(cell => {
         const i = parseInt(cell.getAttribute('data-index'));
-        const r = Math.floor(i / 9);
-        const c = i % 9;
+        const r = Math.floor(i / BOARD_SIZE);
+        const c = i % BOARD_SIZE;
 
-        if (r === targetRow || c === targetCol || (r >= targetBoxRow && r < targetBoxRow + 3 && c >= targetBoxCol && c < targetBoxCol + 3)) {
+        if (r === targetRow || c === targetCol || (r >= targetBoxRow && r < targetBoxRow + BOX_SIZE && c >= targetBoxCol && c < targetBoxCol + BOX_SIZE)) {
             if (cell !== targetCell) {
                 cell.classList.add('highlight-related');
             }
@@ -128,17 +154,20 @@ function highlightGridIntersections(targetCell) {
 }
 
 function isSafe(board, row, col, num) {
-    for (let i = 0; i < 9; i++) {
-        if (board[row][i] === num || board[i][col] === num) {
+    for (let i = 0; i < BOARD_SIZE; i++) {
+        if ((i !== col && board[row][i] === num) || (i !== row && board[i][col] === num)) {
             return false;
         }
     }
 
-    const startRow = row - (row % 3);
-    const startCol = col - (col % 3);
-    for (let i = 0; i < 3; i++) {
-        for (let j = 0; j < 3; j++) {
-            if (board[startRow + i][startCol + j] === num) {
+    const startRow = row - (row % BOX_SIZE);
+    const startCol = col - (col % BOX_SIZE);
+    for (let i = 0; i < BOX_SIZE; i++) {
+        for (let j = 0; j < BOX_SIZE; j++) {
+            const currentRow = startRow + i;
+            const currentCol = startCol + j;
+
+            if ((currentRow !== row || currentCol !== col) && board[currentRow][currentCol] === num) {
                 return false;
             }
         }
@@ -150,24 +179,25 @@ function handleInput(num) {
     if (!selectedCell) return;
 
     const index = parseInt(selectedCell.getAttribute('data-index'));
-    const row = Math.floor(index / 9);
-    const col = index % 9;
+    const row = Math.floor(index / BOARD_SIZE);
+    const col = index % BOARD_SIZE;
 
-    if (num === 0) {
+    if (num === EMPTY_CELL) {
         selectedCell.textContent = '';
         selectedCell.style.color = '';
-        currentBoard[row][col] = 0;
+        currentBoard[row][col] = EMPTY_CELL;
         return;
     }
 
+    if (!Number.isInteger(num) || num < 1 || num > 9) return;
+
+    currentBoard[row][col] = num;
     selectedCell.textContent = num;
 
     if (isSafe(currentBoard, row, col, num)) {
         selectedCell.style.color = 'var(--primary)';
-        currentBoard[row][col] = num;
     } else {
         selectedCell.style.color = 'var(--error)';
-        currentBoard[row][col] = num; 
     }
 }
 
@@ -176,9 +206,9 @@ function solve(board) {
     let col = -1;
     let isEmpty = false;
 
-    for (let i = 0; i < 9; i++) {
-        for (let j = 0; j < 9; j++) {
-            if (board[i][j] === 0) {
+    for (let i = 0; i < BOARD_SIZE; i++) {
+        for (let j = 0; j < BOARD_SIZE; j++) {
+            if (board[i][j] === EMPTY_CELL) {
                 row = i;
                 col = j;
                 isEmpty = true;
@@ -190,18 +220,34 @@ function solve(board) {
 
     if (!isEmpty) return true;
 
-    for (let num = 1; num <= 9; num++) {
+    for (let num = 1; num <= BOARD_SIZE; num++) {
         if (isSafe(board, row, col, num)) {
             board[row][col] = num;
             if (solve(board)) return true;
-            board[row][col] = 0;
+            board[row][col] = EMPTY_CELL;
         }
     }
     return false;
 }
 
+function hasBoardConflicts(board) {
+    for (let row = 0; row < BOARD_SIZE; row++) {
+        for (let col = 0; col < BOARD_SIZE; col++) {
+            const value = board[row][col];
+
+            if (value !== EMPTY_CELL && !isSafe(board, row, col, value)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 function solveSudoku() {
-    let boardToSolve = JSON.parse(JSON.stringify(initialBoard));
+    let boardToSolve = cloneBoard(currentBoard);
+
+    if (hasBoardConflicts(boardToSolve)) return;
 
     if (solve(boardToSolve)) {
         currentBoard = boardToSolve;
@@ -213,8 +259,8 @@ function solveSudoku() {
 
         cells.forEach(cell => {
             const index = parseInt(cell.getAttribute('data-index'));
-            const r = Math.floor(index / 9);
-            const c = index % 9;
+            const r = Math.floor(index / BOARD_SIZE);
+            const c = index % BOARD_SIZE;
 
             cell.textContent = currentBoard[r][c];
 
@@ -235,7 +281,7 @@ function clearBoard() {
     });
     cells.forEach(c => c.classList.remove('active', 'highlight-related'));
     selectedCell = null;
-    currentBoard = JSON.parse(JSON.stringify(initialBoard));
+    currentBoard = cloneBoard(initialBoard);
     startTimer();
 }
 

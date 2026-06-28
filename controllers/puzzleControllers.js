@@ -1,43 +1,43 @@
 const Puzzle = require('../models/puzzles');
+const { StatusCodes } = require('http-status-codes');
 
 const createPuzzle = async (req, res) => {
-    try {
-        const newPuzzle = new Puzzle({ board: req.body.board });
-        const savedPuzzle = await newPuzzle.save();
-        res.status(201).json(savedPuzzle);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
+  const { board } = req.body; 
+  const puzzle = await Puzzle.create({ board });
+  res.status(StatusCodes.CREATED).json({ success: true, puzzle });
 };
 
 const createBulkPuzzles = async (req, res) => {
-    try {
-        if (!Array.isArray(req.body)) {
-            return res.status(400).json({ error: "The request body must be an array of objects." });
-        }
-        const savedPuzzles = await Puzzle.insertMany(req.body);
-        res.status(201).json({ message: `${savedPuzzles.length} puzzles added successfully!` });
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
+  const { puzzles } = req.body;
+
+  if (!Array.isArray(puzzles)) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ msg: 'Please provide an array of puzzles' });
+  }
+
+  if (puzzles.length > 100) {
+    return res.status(StatusCodes.BAD_REQUEST).json({ msg: 'Cannot upload more than 100 puzzles at once' });
+  }
+
+  const formattedPuzzles = puzzles.map(p => ({ board: p.board }));
+  
+  const result = await Puzzle.insertMany(formattedPuzzles);
+  res.status(StatusCodes.CREATED).json({ success: true, count: result.length });
 };
 
-const getRandomPuzzle = async (req, res) => {
-    try {
-        const count = await Puzzle.countDocuments();
-        if (count === 0) {
-            return res.status(404).json({ error: "No puzzles found in database." });
-        }
-        const random = Math.floor(Math.random() * count);
-        const randomPuzzle = await Puzzle.findOne().skip(random);
-        res.json({ board: randomPuzzle.board });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+const getRandomPuzzle = async (req, res, next) => {
+  try {
+    const puzzle = await Puzzle.aggregate([{ $sample: { size: 1 } }]);
+    if (!puzzle || puzzle.length === 0) {
+      return res.status(404).json({ msg: 'No puzzles found in the database.' });
     }
+    res.status(200).json(puzzle[0]);
+  } catch (error) {
+    next(error);
+  }
 };
 
-module.exports = { 
-    getRandomPuzzle, 
-    createPuzzle, 
-    createBulkPuzzles 
+module.exports = {
+  createPuzzle,
+  createBulkPuzzles,
+  getRandomPuzzle
 };
